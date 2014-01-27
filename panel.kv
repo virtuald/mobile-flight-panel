@@ -1,0 +1,159 @@
+
+<MyPanelWidget>:
+    orientation: 'horizontal'
+    padding: 20
+    spacing: 10
+    BoxLayout:
+        orientation: 'vertical'
+        AnchorLayout:
+            Image:
+                source: "spdbrk.png"
+                allow_stretch: True
+                keep_ratio: False 
+            Slider:
+                id: spdbrk
+                orientation: 'vertical'
+                min: 0
+                max: 2
+                step: 1
+                value: 2
+                on_value: root.send_spdbrk()
+    	Label:
+    		text: 'SPD BRK'
+    		halign: 'center'
+    		valign: 'top'
+    		size_hint_y: 0.1
+    BoxLayout:
+    	orientation: 'vertical'
+    	Slider:
+            id: t1
+            orientation: 'vertical'
+            on_value: root.send_throttle()
+    	Label:
+    		text: 'THR L'
+    		halign: 'center'
+    		valign: 'top'
+    		size_hint_y: 0.1
+    BoxLayout:
+    	orientation: 'vertical'
+    	Slider:
+            id: t2
+            orientation: 'vertical'
+            value: t1.value
+            on_value: root.send_throttle()
+    	Label:
+    		text: 'THR R'
+    		halign: 'center'
+    		valign: 'top'
+    		size_hint_y: 0.1
+    BoxLayout:
+    	orientation: 'vertical'
+    	AnchorLayout:
+            Image:
+                source: "flaps_neu.png"
+                allow_stretch: True
+                keep_ratio: False 
+            Slider:
+                id: flaps
+                orientation: 'vertical'
+                min: 0
+                max: 4
+                step: 1
+                value: 4
+                on_value: root.send_flaps()
+    	Label:
+    		text: 'FLAPS'
+    		halign: 'center'
+    		valign: 'top'
+    		size_hint_y: 0.1
+    BoxLayout:
+        orientation: 'vertical'
+        ToggleButton:
+            background_color: 0,1,0,1
+            text: "GEAR"
+            #on_press: self.text = 'GEAR DOWN'
+            #on_release: self.text = 'GEAR UP'
+        Label:
+            text: 'AUTO/BRK'
+            size_hint_y: 0.5
+        ToggleButton:
+            text: "LO"
+            group: 'ab'
+        ToggleButton:
+            text: "MED"
+            group: 'ab'
+        ToggleButton:
+            text: "MAX"
+            group: 'ab'
+        ToggleButton:
+            background_color: 1,1,1,0.5
+            text: "REV"
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'FUEL PUMP'
+                font_size: 10
+            Switch:
+                id: 'fuel'
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'Pitot Heat'
+                font_size: 10
+            Switch:
+                id: 'heat'                
+        Label:
+            text: 'LIGHTS'
+            size_hint_y: 0.1
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'BCN'
+            Switch:
+                id: 'bcn'
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'LAND'
+            Switch:
+                id: 'land'
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'TAXI'
+            Switch:
+                id: 'taxi'
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'NAV'
+            Switch:
+                id: 'nav'                
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'STROBE'
+            Switch:
+                id: 'strobe'        
+        Label:
+            text: str(flaps.value)
+            size_hint_y: 0.3
+        Label:
+            text: str(spdbrk.value)
+            size_hint_y: 0.3
+        
+       
+       
+            
+        
+            
+        
