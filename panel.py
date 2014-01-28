@@ -5,7 +5,21 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
+import time
+
+class IncrediblyCrudeClock(Label):
+    def update(self, *args):
+        self.text = time.asctime()
+
+#class TimeApp(App):
+#    def build(self):
+#        crudeclock = IncrediblyCrudeClock()
+#        Clock.schedule_interval(crudeclock.update, 1)
+#        return crudeclock
+        
+        
 class MyPanelWidget(BoxLayout):
     def send_spdbrk(self,*args):
         slider = self.ids.spdbrk
