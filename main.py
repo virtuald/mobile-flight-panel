@@ -61,7 +61,7 @@ class MyPanelWidget(BoxLayout):
 	if (flaps == 1):
 	  out_flaps = 0.5
 	if (flaps == 0):
-	  out_flaps = 0.875
+	  out_flaps = 1.0
 	self.fs = str(out_flaps)
         print 'flaps:', self.fs
         self.udp_tx()
