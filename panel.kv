@@ -1,8 +1,15 @@
 
+         
 <MyPanelWidget>:
     orientation: 'horizontal'
     padding: 20
     spacing: 10
+    canvas:
+        Rectangle:
+            source: 'blue_gradient.png'
+            pos: self.pos
+            size: self.size
+
     BoxLayout:
         orientation: 'vertical'
         AnchorLayout:
@@ -18,6 +25,11 @@
                 step: 1.0
                 value: 2.0
                 on_value: root.send_spdbrk()
+                canvas:
+                    Rectangle:
+                        pos: (self.center_x - 33, self.value_pos[1] - 16)
+                        size: (64, 32)
+                        source: 'slider_spdbrk.png'
     	Label:
     		text: 'SPD BRK'
     		halign: 'center'
@@ -29,6 +41,11 @@
             id: t1
             orientation: 'vertical'
             on_value: root.send_throttle()
+            canvas:
+                Rectangle:
+                    pos: (self.center_x - 65, self.value_pos[1] - 32)
+                    size: (128, 64)
+                    source: 'slider_throttle.png'            
     	Label:
     		text: 'THR L'
     		halign: 'center'
@@ -41,6 +58,12 @@
             orientation: 'vertical'
             value: t1.value
             on_value: root.send_throttle()
+            canvas:
+                Rectangle:
+                    pos: (self.center_x - 65, self.value_pos[1] - 32)
+                    size: (128, 64)
+                    source: 'slider_throttle.png'
+                               
     	Label:
     		text: 'THR R'
     		halign: 'center'
@@ -50,7 +73,7 @@
     	orientation: 'vertical'
     	AnchorLayout:
             Image:
-                source: "flaps_neu.png"
+                source: "flaps.png"
                 allow_stretch: True
                 keep_ratio: False 
             Slider:
@@ -61,6 +84,12 @@
                 step: 1
                 value: 4
                 on_value: root.send_flaps()
+                canvas:
+                    Rectangle:
+                        pos:  (self.center_x - 33, self.value_pos[1] - 16)
+                        size: (64, 32)
+                        source: 'slider_flaps.png'
+                    
     	Label:
     		text: 'FLAPS'
     		halign: 'center'
