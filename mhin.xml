@@ -44,6 +44,28 @@
 	   <node>/controls/engines/engine[1]/throttle</node>
 	   
    </chunk>
+   
+      <chunk>
+       <name>pbrake</name>
+       <type>float</type>
+       <format>%f</format>
+    <node>/controls/gear/brake-parking</node>
+   </chunk>
+   
+     <chunk>
+       <name>zoom</name>
+       <type>float</type>
+       <format>%f</format>
+    <node>/sim/current-view/field-of-view</node>
+   </chunk>
+
+   <chunk>
+       <name>view</name>
+    <node>/sim/current-view/view-number</node>
+   </chunk>   
+   
+   
+   
 
  </input>
 

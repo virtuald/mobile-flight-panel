@@ -56,7 +56,7 @@
     	Slider:
             id: t2
             orientation: 'vertical'
-            value: t1.value
+            #value: t1.value
             on_value: root.send_throttle()
             canvas:
                 Rectangle:
@@ -96,11 +96,14 @@
     		valign: 'top'
     		size_hint_y: 0.1
     BoxLayout:
+		size_hint_x: 0.5
         orientation: 'vertical'
         ToggleButton:
             background_color: 0,1,0,1
             text: "GEAR"
-            #on_press: self.text = 'GEAR DOWN'
+			id: gear
+			state: 'down'
+            on_press: root.send_gear()
             #on_release: self.text = 'GEAR UP'
         Label:
             text: 'AUTO/BRK'
@@ -114,11 +117,41 @@
         ToggleButton:
             text: "MAX"
             group: 'ab'
+        Button:
+           
+            text: "BREAKS"
         ToggleButton:
-            background_color: 1,1,1,0.5
-            text: "REV"
+           
+            text: "REVERSE"
+		Button:
+			text: "VIEW"
+            on_press: root.send_view()
+		Button:
+			text: "RESET\nVIEW"
+            on_press: root.reset_view()
+	BoxLayout:
+    	orientation: 'vertical'
+    	Slider:
+            id: zoom
+            value: 55
+            orientation: 'vertical'
+            on_value: root.send_zoom()
+    	Label:
+    		text: 'zoom'
+    		halign: 'center'
+    		size_hint_y: 0.1
     BoxLayout:
         orientation: 'vertical'
+		BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                text: 'P.Break'
+                font_size: 10
+            Switch:
+                id: pb
+                active: True
+                on_active: root.send_pb()
         BoxLayout:
             size_hint_y: 0.1
             orientation: 'horizontal'
