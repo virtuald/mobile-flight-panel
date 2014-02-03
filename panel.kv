@@ -3,41 +3,45 @@
 <MyPanelWidget>:
     orientation: 'horizontal'
     padding: 20
-    spacing: 10
+    #spacing: 20
     canvas:
         Rectangle:
-            source: 'blue_gradient.png'
+            source: 'background_michat.png'
             pos: self.pos
             size: self.size
 
+    
     BoxLayout:
         orientation: 'vertical'
-        AnchorLayout:
-            Image:
-                source: "spdbrk.png"
-                allow_stretch: True
-                keep_ratio: False 
-            Slider:
-                id: spdbrk
-                orientation: 'vertical'
-                min: 0.0
-                max: 2.0
-                step: 1.0
-                value: 2.0
-                on_value: root.send_spdbrk()
-                canvas:
-                    Rectangle:
-                        pos: (self.center_x - 33, self.value_pos[1] - 16)
-                        size: (64, 32)
-                        source: 'slider_spdbrk.png'
-    	Label:
-    		text: 'SPD BRK'
-    		halign: 'center'
-    		valign: 'top'
-    		size_hint_y: 0.1
+        Label:
+            text: 'void'
+            size_hint_y: 0.2
+        Slider:
+            id: spdbrk
+            orientation: 'vertical'
+            min: 0.0
+            max: 2.0
+            step: 1.0
+            value: 2.0
+            on_value: root.send_spdbrk()
+            canvas:
+                Rectangle:
+                    pos: (self.center_x - 33, self.value_pos[1] - 16)
+                    size: (64, 32)
+                    source: 'slider_spdbrk.png'
+        Label:
+            text: 'void'
+            size_hint_y: 0.6
+            
     BoxLayout:
-    	orientation: 'vertical'
-    	Slider:
+        orientation: 'vertical'
+        spacing: 30
+        Label:
+            text: 'void'
+            size_hint_y: 0.1        
+
+    
+        Slider:
             id: t1
             orientation: 'vertical'
             on_value: root.send_throttle()
@@ -45,15 +49,18 @@
                 Rectangle:
                     pos: (self.center_x - 65, self.value_pos[1] - 32)
                     size: (128, 64)
-                    source: 'slider_throttle.png'            
-    	Label:
-    		text: 'THR L'
-    		halign: 'center'
-    		valign: 'top'
-    		size_hint_y: 0.1
+                    source: 'slider_throttle.png'  
+        ToggleButton:
+            text: 'reverse'
+            size_hint_y: 0.4
+
     BoxLayout:
-    	orientation: 'vertical'
-    	Slider:
+        orientation: 'vertical'
+        spacing: 30
+        Label:
+            text: 'void'
+            size_hint_y: 0.1  
+        Slider:
             id: t2
             orientation: 'vertical'
             value: t1.value
@@ -63,38 +70,30 @@
                     pos: (self.center_x - 65, self.value_pos[1] - 32)
                     size: (128, 64)
                     source: 'slider_throttle.png'
-                               
-    	Label:
-    		text: 'THR R'
-    		halign: 'center'
-    		valign: 'top'
-    		size_hint_y: 0.1
+        ToggleButton:
+            text: 'reverse'
+            size_hint_y: 0.4
+        
     BoxLayout:
-    	orientation: 'vertical'
-    	AnchorLayout:
-            Image:
-                source: "flaps.png"
-                allow_stretch: True
-                keep_ratio: False 
-            Slider:
-                id: flaps
-                orientation: 'vertical'
-                min: 0
-                max: 4
-                step: 1
-                value: 4
-                on_value: root.send_flaps()
-                canvas:
-                    Rectangle:
-                        pos:  (self.center_x - 33, self.value_pos[1] - 16)
-                        size: (64, 32)
-                        source: 'slider_flaps.png'
-                    
-    	Label:
-    		text: 'FLAPS'
-    		halign: 'center'
-    		valign: 'top'
-    		size_hint_y: 0.1
+        orientation: 'vertical'
+        Label:
+            text: 'void'
+            size_hint_y: 0.2                        
+        Slider:
+            id: flaps
+            orientation: 'vertical'
+            min: 0
+            max: 4
+            step: 1
+            value: 4
+            on_value: root.send_flaps()
+            canvas:
+                Rectangle:
+                    pos:  (self.center_x - 33, self.value_pos[1] - 16)
+                    size: (64, 32)
+                    source: 'slider_flaps.png'
+                
+   
     BoxLayout:
         orientation: 'vertical'
         ToggleButton:
