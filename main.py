@@ -11,7 +11,7 @@ import time
 import sys
 from socket import *
    
-host = "babs"
+host = "192.168.30.1"
 port = 9009
 #buf = 1024
 addr = (host,port)
@@ -83,12 +83,12 @@ class MyPanelWidget(BoxLayout):
         self.udp_tx()
         
     def send_pb(self,*args):
-        self.pb= self.ids.pb.active
-        if (self.pb):
+        self.pb= self.ids.pb.state
+        if (self.pb == 'down'):
             self.pbs = "1"
         else:
             self.pbs = "0"
-        print self.pbs
+        print self.pb , self.pbs
         self.udp_tx()
 
     def send_zoom(self,*args):
