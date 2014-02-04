@@ -81,7 +81,7 @@ class MyPanelWidget(BoxLayout):
         self.udp_tx()
         
     def send_etrim(self,*args):
-        self.etrims = str(self.ids.etrim.value/100)
+        self.etrims = str((self.ids.etrim.value-50)/100)
         print 'elev trim:', self.etrims
         self.udp_tx()
         
