@@ -1,5 +1,5 @@
 
-         
+   
 <MyPanelWidget>:
     orientation: 'vertical'
     padding: 20
@@ -18,8 +18,6 @@
         orientation: 'horizontal'
     #padding: 20
     #spacing: 20
-        
-       
         Slider:
             padding: 40
             id: spdbrk
@@ -34,10 +32,7 @@
                     pos: (self.center_x - 33, self.value_pos[1] - 16)
                     size: (64, 32)
                     source: 'slider_spdbrk.png'
-        
-
-                
-              
+       
         Slider:
             id: t1
             orientation: 'vertical'
@@ -63,9 +58,10 @@
         
             
         Slider:
-            id: trim
+            id: etrim
             orientation: 'vertical'
             value: 50
+            on_value: root.send_etrim()
             
         Slider:
             padding: 40
@@ -93,20 +89,17 @@
         size_hint_y: 0.4
         orientation: 'horizontal'
         ToggleButton:
-            background_down: 'pbrake_off.jpg'
-            background_normal: 'pbrake.jpg'
+            background_down: 'pbrake.jpg'
+            background_normal: 'pbrake_off.jpg'
             id: pb
             on_press: root.send_pb()
-            #canvas:
-            #    Rectangle:
-            #        source: 'pbrake.jpg'
-            #        pos: self.pos
-            #        size: self.size
-
+        
         ToggleButton:
             #size_hint_x: 2.0
             background_color: 1,1,1,0.5
             text: 'REVERSE'
+            id: rev
+            on_press: root.send_rev()
             
         BoxLayout:
             orientation: 'vertical'
@@ -133,6 +126,8 @@
                 orientation: 'horizontal'
                 Button:
                     text: 'BRAKE'
+                    id: tb
+                    on_state: root.send_tb()
                 ToggleButton:
                     text: 'GEAR'
                     background_color: 0,1,0,1

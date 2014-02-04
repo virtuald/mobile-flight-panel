@@ -17,6 +17,8 @@ port = 9009
 addr = (host,port)
 UDPSock = socket(AF_INET,SOCK_DGRAM)
 
+max_view=10
+      
 
 
 class IncrediblyCrudeClock(Label):
@@ -39,8 +41,13 @@ class MyPanelWidget(BoxLayout):
     pbs="1"    #parking brake
     fovs="55"  #FOV zoom
     views="0"  #views
+    etrims="0" #elev. trim  TODO
+    tbs="0"    #toe brakes  TODO
+    revs="0"   #reverser    TODO
     gear=True
     view=0
+    
+    
     def send_spdbrk(self,*args):
         slider = self.ids.spdbrk
         self.sbs = str((2 - slider.value)/2)
@@ -71,6 +78,12 @@ class MyPanelWidget(BoxLayout):
         print 'flaps:', self.fs
         self.udp_tx()
         
+    def send_etrim(self,*args):
+        self.etrims = str(self.ids.etrim.value/100)
+        print 'elev trim:', self.etrims
+        self.udp_tx()
+        
+        
     def send_gear(self,*args):
         self.gear = self.ids.gear.state
         if (self.gear == "down"):
@@ -79,7 +92,7 @@ class MyPanelWidget(BoxLayout):
         else:
             self.ids.gear.text = "Gear\nUP"
             self.gs="0"
-        print self.gear, self.gs
+        print "gear", self.gear, self.gs
         self.udp_tx()
         
     def send_pb(self,*args):
@@ -88,17 +101,36 @@ class MyPanelWidget(BoxLayout):
             self.pbs = "1"
         else:
             self.pbs = "0"
-        print self.pb , self.pbs
+        print "park brk", self.pb , self.pbs
         self.udp_tx()
+        
+    def send_rev(self,*args):
+        self.rev= self.ids.rev.state
+        if (self.rev == 'down'):
+            self.revs = "1"
+        else:
+            self.revs = "0"
+        print "reverser", self.rev , self.revs
+        self.udp_tx()
+
+    def send_tb(self,*args):
+        self.tb= self.ids.tb.state
+        if (self.tb == 'down'):
+            self.tbs = "1"
+        else:
+            self.tbs = "0"
+        print "Toe Brake", self.tb , self.tbs
+        self.udp_tx()        
+        
 
     def send_zoom(self,*args):
         self.zoom = self.ids.zoom.value
-        self.fovs = str(int(self.zoom+1))
+        self.fovs = str(int(102-(self.zoom)))
         print self.fovs
         self.udp_tx()
         
     def send_view(self,*args):
-        if(self.view < 10):
+        if(self.view < max_view):
             self.view +=1
         else:
             self.view=0
@@ -116,7 +148,22 @@ class MyPanelWidget(BoxLayout):
         
            
     def udp_tx(self,*args):
-        outline = self.sbs +","+ self.fs +","+ self.gs +","+ self.t1s +","+ self.t2s +","+self.pbs  +","+self.fovs+","+self.views+"\n"
+        
+        
+        
+        
+        outline = self.sbs +","+\
+                  self.t1s +","+\
+                  self.t2s +","+\
+                  self.etrims +","+\
+                  self.fs   +","+\
+                  self.fovs +","+\
+                  self.pbs  +","+\
+                  self.revs +","+\
+                  self.tbs  +","+\
+                  self.gs   +","+\
+                  self.views+"\n"
+                  
         print outline
         UDPSock.sendto(outline,addr)
             
