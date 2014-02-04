@@ -125,8 +125,12 @@
                 padding: 10
                 orientation: 'horizontal'
                 Button:
-                    text: 'BRAKE'
-                    id: tb
+                    text: 'toe brk\nL'
+                    id: tbl
+                    on_state: root.send_tb()
+                Button:
+                    text: 'toe brk\nR'
+                    id: tbr
                     on_state: root.send_tb()
                 ToggleButton:
                     text: 'GEAR'
@@ -134,8 +138,7 @@
                     id: gear
                     state: 'down'
                     on_press: root.send_gear()
-                Button:
-                    text: 'f2'    
+                 
                 Button:
                     text: 'view' 
                     on_press: root.send_view()

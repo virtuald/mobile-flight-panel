@@ -59,12 +59,21 @@
                
                <chunk>
                    <name>reverser</name>   
+                   <node>/controls/engines/engine/reverser</node>
+               </chunk> 
+               <chunk>
+                   <name>reverser</name>   
                    <node>/controls/engines/engine[1]/reverser</node>
                </chunk>               
 
                <chunk>
                    <name>toe brake</name>
-                   <node>/controls/gear/brake</node>
+                   <node>/controls/gear/brake-left</node>
+               </chunk>
+               
+               <chunk>
+                   <name>toe brake</name>
+                   <node>/controls/gear/brake-right</node>
                </chunk>
                
                <chunk>

@@ -11,7 +11,8 @@ import time
 import sys
 from socket import *
    
-host = "192.168.30.1"
+#host = "192.168.30.1"
+host = "localhost"
 port = 9009
 #buf = 1024
 addr = (host,port)
@@ -42,7 +43,8 @@ class MyPanelWidget(BoxLayout):
     fovs="55"  #FOV zoom
     views="0"  #views
     etrims="0" #elev. trim  TODO
-    tbs="0"    #toe brakes  TODO
+    tbls="0"    #toe brakes  TODO
+    tbrs ="0"
     revs="0"   #reverser    TODO
     gear=True
     view=0
@@ -114,12 +116,20 @@ class MyPanelWidget(BoxLayout):
         self.udp_tx()
 
     def send_tb(self,*args):
-        self.tb= self.ids.tb.state
-        if (self.tb == 'down'):
-            self.tbs = "1"
+        self.tbl= self.ids.tbl.state
+        if (self.tbl == 'down'):
+            self.tbls = "1"
         else:
-            self.tbs = "0"
-        print "Toe Brake", self.tb , self.tbs
+            self.tbls = "0"
+            
+        self.tbr= self.ids.tbr.state
+        if (self.tbr == 'down'):
+            self.tbrs = "1"
+        else:
+            self.tbrs = "0"
+                  
+            
+        print "Toe Brakes", self.tbls, self.tbrs
         self.udp_tx()        
         
 
@@ -160,7 +170,9 @@ class MyPanelWidget(BoxLayout):
                   self.fovs +","+\
                   self.pbs  +","+\
                   self.revs +","+\
-                  self.tbs  +","+\
+                  self.revs +","+\
+                  self.tbls  +","+\
+                  self.tbrs  +","+\
                   self.gs   +","+\
                   self.views+"\n"
                   
