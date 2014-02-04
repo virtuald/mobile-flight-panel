@@ -4,15 +4,14 @@
     orientation: 'vertical'
     padding: 20
     spacing: 30
-    #canvas:
-    #    Rectangle:
-    #        source: 'background_michat.png'
-    #        pos: self.pos
-    #        size: self.size
+    canvas:
+        Rectangle:
+            source: 'background.png'
+            pos: self.pos
+            size: self.size
 
 
     Label:
-        text: 'void'
         size_hint_y: 0.02
     BoxLayout:
         orientation: 'horizontal'
@@ -62,6 +61,12 @@
             orientation: 'vertical'
             value: 50
             on_value: root.send_etrim()
+            #canvas:
+                #Rectangle:
+                    #pos: (self.center_x - 65, self.value_pos[1] - 32)
+                    ##size: (128, 64)
+                    #size: self.size
+                    #source: 'trimwheel.jpg'
             
         Slider:
             padding: 40
@@ -83,6 +88,13 @@
             value: 55
             orientation: 'vertical'
             on_value: root.send_zoom()
+        #Scatter:
+            #do_rotation: False 
+            #do_scale: False
+            #do_translation_x: False
+            #Image:
+                #source: 'trimwheel.jpg'
+                #size_y: self.size_y
         
                 
     BoxLayout:
