@@ -14,6 +14,7 @@ from socket import *
    
 #host = "192.168.30.1"
 host = "localhost"
+outputline = "foo"
 port = 9009
 in_port = 9010
 #buf = 1024
@@ -21,14 +22,11 @@ addr = (host,port)
 UDPSock = socket(AF_INET,SOCK_DGRAM)
 insock =  socket(AF_INET,SOCK_DGRAM)
 insock.setblocking(0)
+max_view=10      
 
-max_view=10
-      
-
-
-#class IncrediblyCrudeClock(Label):
-def update(*args):
+def read_udp(ud):
     #self.text = time.asctime()
+    input_value = []
     data = False
     try:
         data, address = insock.recvfrom(4096)
@@ -37,30 +35,82 @@ def update(*args):
             pass
     
     if (data):
-        print "received:", data
-    else:
-        print "."
+        print     "outputline:", outputline
+        if (data == outputline):
+            print "  received:", data
+        else:
+            print "rec.ed new:", data
+            input_value = data.split(',')
+            
+            panel.sbs=input_value[0]    #speedbrake
+            panel.ids.spdbrk.value = 2.0 - float(panel.sbs)*2
+           
+            panel.t1s=input_value[1]    #throttle
+            panel.ids.t1.value = float(panel.t1s) *100
+            panel.t2s=input_value[2]
+            panel.ids.t2.value = float(panel.t2s) *100
+            panel.etrims=input_value[3] #elev. trim
+            panel.ids.etrim.value = float(panel.etrims) *100
+            panel.fs=input_value[4]     #flaps
+            panel.ids.flaps.value = 4.0 - (float(panel.fs) * 4.0)
+            panel.fovs=input_value[5]  #FOV zoom
+            panel.ids.zoom.value = 102 - (int(panel.fovs))
+            #panel.pbs=input_value[6]    #parking brake
+            if (input_value[6] == '1'):
+                panel.ids.pb.state = "down"  
+            else:
+                panel.ids.pb.state = "normal"
+            
+            #panel.revs=input_value[7]   #reversers
+            if (input_value[7] == '1'):
+                panel.ids.rev.state = "down"  
+            else:
+                panel.ids.rev.state = "normal"
+            
+            #tbls=input_value[9]    #toe brakes 
+            if (input_value[9] == '1'):
+                panel.ids.tbl.state = "down"  
+            else:
+                panel.ids.tbl.state = "normal"
+            
+            #tbrs =input_value[10]
+            if (input_value[10] == '1'):
+                panel.ids.tbr.state = "down"  
+            else:
+                panel.ids.tbr.state = "normal"
+            
+            #panel.gs=input_value[11]     #gear
+            if (input_value[11] == '1'):
+                panel.ids.gear.state = "down"  
+            else:
+                panel.ids.gear.state = "normal"
+            
+            panel.views=input_value[12]  #views
+                
 
-    
-    
+
+
 class MyPanelWidget(BoxLayout):
+    sbs="0"    #speedbrake
     t1s="0"    #throttle
     t2s="0"
-    sbs="0"    #speedbrake
+    etrims="0" #elev. trim 
     fs="0"     #flaps
-    gs="1"     #gear
-    pbs="1"    #parking brake
     fovs="55"  #FOV zoom
-    views="0"  #views
-    etrims="0" #elev. trim  TODO
-    tbls="0"    #toe brakes  TODO
+    pbs="1"    #parking brake
+    revs="0"   #reverser  
+    tbls="0"    #toe brakes 
     tbrs ="0"
-    revs="0"   #reverser    TODO
+    gs="1"     #gear
+    views="0"  #views
+     
     gear=True
     view=0
     
+
     
     def send_spdbrk(self,*args):
+        #print self, type(self)
         slider = self.ids.spdbrk
         self.sbs = str((2 - slider.value)/2)
         print 'spdbrk:', self.sbs
@@ -76,6 +126,7 @@ class MyPanelWidget(BoxLayout):
       
     def send_flaps(self,*args):
         flaps = self.ids.flaps.value
+        out_flaps = 0
         if (flaps == 4):
             out_flaps = 0
         if (flaps == 3):
@@ -112,6 +163,7 @@ class MyPanelWidget(BoxLayout):
         if (self.pb == 'down'):
             self.pbs = "1"
         else:
+            #print self.pb
             self.pbs = "0"
         print "park brk", self.pb , self.pbs
         self.udp_tx()
@@ -161,15 +213,14 @@ class MyPanelWidget(BoxLayout):
     def reset_view(self,*args):
         self.view=0
         self.views = str(self.view)
-        print self.views
+        print "reset_view", self.views
         self.udp_tx()
         
-             
         
-           
     def udp_tx(self,*args):
+        global outputline
 
-        outline = self.sbs +","+\
+        outputline = self.sbs +","+\
                   self.t1s +","+\
                   self.t2s +","+\
                   self.etrims +","+\
@@ -183,21 +234,24 @@ class MyPanelWidget(BoxLayout):
                   self.gs   +","+\
                   self.views+"\n"
                   
-        print outline
-        UDPSock.sendto(outline,addr)
+        print outputline
+        UDPSock.sendto(outputline,addr)
             
         
 
 class Panel(App):
     def build(self):
+        global panel
         #crudeclock = IncrediblyCrudeClock()
-        Clock.schedule_interval(update, 0.1)
+        panel = MyPanelWidget()
+        
+        Clock.schedule_interval(read_udp, 0.1)
         
         insock.bind(('', in_port)) 
         print "linstening on port ", in_port
       
         
-        return MyPanelWidget()
+        return panel
 
 if __name__ == "__main__":
     Panel().run()

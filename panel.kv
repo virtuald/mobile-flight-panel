@@ -104,14 +104,14 @@
             background_down: 'pbrake.jpg'
             background_normal: 'pbrake_off.jpg'
             id: pb
-            on_press: root.send_pb()
+            on_state: root.send_pb()
         
         ToggleButton:
             #size_hint_x: 2.0
             background_color: 1,1,1,0.5
             text: 'REVERSE'
             id: rev
-            on_press: root.send_rev()
+            on_state: root.send_rev()
             
         BoxLayout:
             orientation: 'vertical'
@@ -149,7 +149,7 @@
                     background_color: 0,1,0,1
                     id: gear
                     state: 'down'
-                    on_press: root.send_gear()
+                    on_state: root.send_gear()
                  
                 Button:
                     text: 'view' 
