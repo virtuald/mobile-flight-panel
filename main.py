@@ -24,7 +24,9 @@ insock =  socket(AF_INET,SOCK_DGRAM)
 insock.setblocking(0)
 max_view=10      
 
-def read_udp(ud):
+
+# disabled due to race conditions:
+def read_udp(dt):
     #self.text = time.asctime()
     input_value = []
     data = False
@@ -35,58 +37,61 @@ def read_udp(ud):
             pass
     
     if (data):
-        print     "outputline:", outputline
-        if (data == outputline):
-            print "  received:", data
-        else:
-            print "rec.ed new:", data
-            input_value = data.split(',')
+        print     "outputline:", outputline, len(outputline)
+        #stripped =  outputline.strip( '\n' );
+        #print     "  stripped:", stripped, len(stripped)
+        print "rec.   new:", data, len(data)
+        input_value = data.split(',')
             
+        if (not(input_value[0] == panel.sbs)):
+            print "rec. speedbrakes"
             panel.sbs=input_value[0]    #speedbrake
             panel.ids.spdbrk.value = 2.0 - float(panel.sbs)*2
-           
-            panel.t1s=input_value[1]    #throttle
-            panel.ids.t1.value = float(panel.t1s) *100
-            panel.t2s=input_value[2]
-            panel.ids.t2.value = float(panel.t2s) *100
-            panel.etrims=input_value[3] #elev. trim
-            panel.ids.etrim.value = float(panel.etrims) *100
-            panel.fs=input_value[4]     #flaps
-            panel.ids.flaps.value = 4.0 - (float(panel.fs) * 4.0)
-            panel.fovs=input_value[5]  #FOV zoom
-            panel.ids.zoom.value = 102 - (int(panel.fovs))
-            #panel.pbs=input_value[6]    #parking brake
-            if (input_value[6] == '1'):
-                panel.ids.pb.state = "down"  
-            else:
-                panel.ids.pb.state = "normal"
             
-            #panel.revs=input_value[7]   #reversers
-            if (input_value[7] == '1'):
-                panel.ids.rev.state = "down"  
-            else:
-                panel.ids.rev.state = "normal"
+        panel.t1s=input_value[1]    #throttle
+        panel.ids.t1.value = float(panel.t1s) *100
+        panel.t2s=input_value[2]
+        panel.ids.t2.value = float(panel.t2s) *100
+        panel.etrims=input_value[3] #elev. trim
+        panel.ids.etrim.value = float(panel.etrims) *100
+        panel.fs=input_value[4]     #flaps
+        panel.ids.flaps.value = 4.0 - (float(panel.fs) * 4.0)
+        
+        panel.fovs=input_value[5]  #FOV zoom
+        print "fovs", panel.fovs
+        panel.ids.zoom.value = 102 - (float(panel.fovs))
+        #panel.pbs=input_value[6]    #parking brake
+        if (input_value[6] == '1'):
+            panel.ids.pb.state = "down"  
+        else:
+            panel.ids.pb.state = "normal"
+        
+        #panel.revs=input_value[7]   #reversers
+        if (input_value[7] == '1'):
+            panel.ids.rev.state = "down"  
+        else:
+            panel.ids.rev.state = "normal"
+        
+        #tbls=input_value[9]    #toe brakes 
+        if (input_value[9] == '1'):
+            panel.ids.tbl.state = "down"  
+        else:
+            panel.ids.tbl.state = "normal"
+        
+        #tbrs =input_value[10]
+        if (input_value[10] == '1'):
+            panel.ids.tbr.state = "down"  
+        else:
+            panel.ids.tbr.state = "normal"
+        
+        #panel.gs=input_value[11]     #gear
+        if (input_value[11] == '1'):
+            panel.ids.gear.state = "down"  
+        else:
+            panel.ids.gear.state = "normal"
+        
+        panel.views=input_value[12]  #views
             
-            #tbls=input_value[9]    #toe brakes 
-            if (input_value[9] == '1'):
-                panel.ids.tbl.state = "down"  
-            else:
-                panel.ids.tbl.state = "normal"
-            
-            #tbrs =input_value[10]
-            if (input_value[10] == '1'):
-                panel.ids.tbr.state = "down"  
-            else:
-                panel.ids.tbr.state = "normal"
-            
-            #panel.gs=input_value[11]     #gear
-            if (input_value[11] == '1'):
-                panel.ids.gear.state = "down"  
-            else:
-                panel.ids.gear.state = "normal"
-            
-            panel.views=input_value[12]  #views
-                
 
 
 
@@ -243,14 +248,13 @@ class Panel(App):
     def build(self):
         global panel
         #crudeclock = IncrediblyCrudeClock()
+        
         panel = MyPanelWidget()
-        
-        Clock.schedule_interval(read_udp, 0.1)
-        
-        insock.bind(('', in_port)) 
-        print "linstening on port ", in_port
-      
-        
+        #insock.bind(('', in_port)) 
+        #print "linstening on port ", in_port
+        #read_udp()
+        #Clock.schedule_interval(read_udp, 1)
+           
         return panel
 
 if __name__ == "__main__":
