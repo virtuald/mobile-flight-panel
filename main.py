@@ -9,30 +9,40 @@ from kivy.clock import Clock
 
 import time
 import sys
+import errno
 from socket import *
    
 #host = "192.168.30.1"
 host = "localhost"
 port = 9009
+in_port = 9010
 #buf = 1024
 addr = (host,port)
 UDPSock = socket(AF_INET,SOCK_DGRAM)
+insock =  socket(AF_INET,SOCK_DGRAM)
+insock.setblocking(0)
 
 max_view=10
       
 
 
-class IncrediblyCrudeClock(Label):
-    def update(self, *args):
-        self.text = time.asctime()
+#class IncrediblyCrudeClock(Label):
+def update(*args):
+    #self.text = time.asctime()
+    data = False
+    try:
+        data, address = insock.recvfrom(4096)
+    except IOError as e:
+        if e.errno == errno.EWOULDBLOCK:
+            pass
+    
+    if (data):
+        print "received:", data
+    else:
+        print "."
 
-#class TimeApp(App):
-#    def build(self):
-#        crudeclock = IncrediblyCrudeClock()
-#        Clock.schedule_interval(crudeclock.update, 1)
-#        return crudeclock
-        
-        
+    
+    
 class MyPanelWidget(BoxLayout):
     t1s="0"    #throttle
     t2s="0"
@@ -158,10 +168,7 @@ class MyPanelWidget(BoxLayout):
         
            
     def udp_tx(self,*args):
-        
-        
-        
-        
+
         outline = self.sbs +","+\
                   self.t1s +","+\
                   self.t2s +","+\
@@ -183,6 +190,13 @@ class MyPanelWidget(BoxLayout):
 
 class Panel(App):
     def build(self):
+        #crudeclock = IncrediblyCrudeClock()
+        Clock.schedule_interval(update, 0.1)
+        
+        insock.bind(('', in_port)) 
+        print "linstening on port ", in_port
+      
+        
         return MyPanelWidget()
 
 if __name__ == "__main__":
