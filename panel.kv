@@ -101,18 +101,33 @@
         size_hint_y: 0.4
         orientation: 'horizontal'
         ToggleButton:
+            size_hint_x: 0.8
             background_down: 'pbrake.jpg'
             background_normal: 'pbrake_off.jpg'
             id: pb
             on_state: root.send_pb()
         
-        ToggleButton:
-            #size_hint_x: 2.0
-            background_color: 1,1,1,0.5
-            text: 'REVERSE'
-            id: rev
-            on_state: root.send_rev()
-            
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 1.2
+            ToggleButton:
+                background_down: 'rev_active.png'
+                background_normal: 'rev_off.png'
+                #size_hint_x: 2.0
+                #background_color: 1,0,0,1
+                #text: 'REVERSER'
+                id: rev
+                on_state: root.send_rev()
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+                padding: 10
+                Button:
+                    text: 'f1'
+                Button:
+                    text: 'f2'
+                Button:
+                    text: 'f3'
         BoxLayout:
             orientation: 'vertical'
             size_hint_x: 2.0
