@@ -1,0 +1,4 @@
+title=Panel
+author=d-laser,Michat
+orientation=landscape
+fullscreen=1

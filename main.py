@@ -111,6 +111,7 @@ class MyPanelWidget(BoxLayout):
      
     gear=True
     view=0
+    fov=[55,55,55,55,55,55,55,55,55,55,55]
     
 
     
@@ -201,18 +202,21 @@ class MyPanelWidget(BoxLayout):
         
 
     def send_zoom(self,*args):
-        self.zoom = self.ids.zoom.value
-        self.fovs = str(int(102-(self.zoom)))
-        print self.fovs
+        #global fov
+        self.fov[self.view] = self.ids.zoom.value
+        self.fovs = str(int(102-(self.fov[self.view])))
+        print "view:" ,self.view, "fov:", self.fovs
         self.udp_tx()
         
     def send_view(self,*args):
         if(self.view < max_view):
             self.view +=1
+            
         else:
             self.view=0
+        self.ids.zoom.value = self.fov[self.view]
         self.views = str(self.view)
-        print self.views
+        print "view:", self.views
         self.udp_tx()
         
     def reset_view(self,*args):
