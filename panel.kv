@@ -6,7 +6,7 @@
     spacing: 30
     canvas:
         Rectangle:
-            source: 'background.png'
+            source: 'background2.png'
             pos: self.pos
             size: self.size
 
@@ -28,9 +28,9 @@
             on_value: root.send_spdbrk()
             canvas:
                 Rectangle:
-                    pos: (self.center_x - 33, self.value_pos[1] - 16)
-                    size: (64, 32)
-                    source: 'slider_spdbrk.png'
+                    pos: (self.center_x - 64, self.value_pos[1] - 16)
+                    size: (128, 64)
+                    source: 'slider_spdbrk2.png'
        
         Slider:
             id: t1
@@ -38,9 +38,9 @@
             on_value: root.send_throttle()
             canvas:
                 Rectangle:
-                    pos: (self.center_x - 65, self.value_pos[1] - 32)
-                    size: (128, 64)
-                    source: 'slider_throttle.png'  
+                    pos: (self.center_x - 50, self.value_pos[1] - 35)
+                    size: (100,70)
+                    source: 'throttle_l.png'  
         
 
        
@@ -51,9 +51,9 @@
             on_value: root.send_throttle()
             canvas:
                 Rectangle:
-                    pos: (self.center_x - 65, self.value_pos[1] - 32)
-                    size: (128, 64)
-                    source: 'slider_throttle.png'
+                    pos: (self.center_x - 50, self.value_pos[1] - 35)
+                    size: (100,70)
+                    source: 'throttle_r.png'
         
             
         Slider:
@@ -61,12 +61,15 @@
             orientation: 'vertical'
             value: 50
             on_value: root.send_etrim()
-            #canvas:
+            canvas:
                 #Rectangle:
-                    #pos: (self.center_x - 65, self.value_pos[1] - 32)
-                    ##size: (128, 64)
+                    #pos: self.pos + self.width/2
+                    #size: (20,self.height)
+                Rectangle:
+                    pos: (self.center_x - 15, self.value_pos[1] - 15)
+                    size: (60, 30)
                     #size: self.size
-                    #source: 'trimwheel.jpg'
+                    source: 'slider_trim.png'
             
         Slider:
             padding: 40
@@ -79,9 +82,9 @@
             on_value: root.send_flaps()
             canvas:
                 Rectangle:
-                    pos:  (self.center_x - 33, self.value_pos[1] - 16)
-                    size: (64, 32)
-                    source: 'slider_flaps.png'
+                    pos:  (self.center_x - 30, self.value_pos[1] - 15)
+                    size: (60, 30)
+                    source: 'slider_flaps2.png'
                 
         Slider:
             id: zoom
@@ -101,9 +104,10 @@
         size_hint_y: 0.4
         orientation: 'horizontal'
         ToggleButton:
-            size_hint_x: 0.8
-            background_down: 'pbrake.jpg'
-            background_normal: 'pbrake_off.jpg'
+            size_hint_x: 0.7
+            size_hint_x: 0.7
+            background_down: 'pb_on2.png'
+            background_normal: 'pb_off2.png'
             id: pb
             on_state: root.send_pb()
         
@@ -138,6 +142,7 @@
                 orientation: 'horizontal'
                 ToggleButton:
                     text: 'light'
+                    on_state: root.read_telnet('/sim/time/elapsed-sec')
                 ToggleButton:
                     text: 'light'
                 ToggleButton:

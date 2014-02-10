@@ -6,6 +6,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
+from FlightGear import FlightGear
 
 import time
 import sys
@@ -17,12 +18,31 @@ host = "localhost"
 outputline = "foo"
 port = 9009
 in_port = 9010
+telnet_port = 9000
 #buf = 1024
 addr = (host,port)
 UDPSock = socket(AF_INET,SOCK_DGRAM)
 insock =  socket(AF_INET,SOCK_DGRAM)
 insock.setblocking(0)
 max_view=10      
+fg = False
+
+try:
+    fg = FlightGear(host, telnet_port)
+except:
+    print "can't connet to telnet port ", telnet_port
+
+
+
+def read_telnet(path):
+    if (fg):
+        val = fg[path]
+        print "read_telnet", path, val
+        return val
+
+def write_telnet(path, value):
+    if (fg):
+        fg[path] = value
 
 
 # disabled due to race conditions:
@@ -112,9 +132,21 @@ class MyPanelWidget(BoxLayout):
     gear=True
     view=0
     fov=[55,55,55,55,55,55,55,55,55,55,55]
-    
+    #fg = FlightGear(host, telnet_port)
 
-    
+    def read_telnet(self,path):
+        if fg:
+            val = fg[path]
+            print "read_telnet", path, val
+            return val
+            
+    def write_telnet(self, path, val):
+        if fg:
+            fg[path] = value
+            print "write_telnet", path, val
+
+
+        
     def send_spdbrk(self,*args):
         #print self, type(self)
         slider = self.ids.spdbrk
@@ -251,8 +283,9 @@ class MyPanelWidget(BoxLayout):
 class Panel(App):
     def build(self):
         global panel
-        #crudeclock = IncrediblyCrudeClock()
         
+        #crudeclock = IncrediblyCrudeClock()
+     
         panel = MyPanelWidget()
         #insock.bind(('', in_port)) 
         #print "linstening on port ", in_port
