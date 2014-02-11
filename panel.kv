@@ -141,16 +141,16 @@
                 padding: 10
                 orientation: 'horizontal'
                 ToggleButton:
-                    text: 'light'
-                    on_state: root.read_telnet('/sim/time/elapsed-sec')
+                    text: ''
+                    #on_state: root.read_telnet('/sim/time/elapsed-sec')
                 ToggleButton:
-                    text: 'light'
+                    text: ''
                 ToggleButton:
-                    text: 'light'    
+                    text: ''    
                 ToggleButton:
-                    text: 'light' 
+                    text: '' 
                 ToggleButton:
-                    text: 'light'
+                    text: ''
             BoxLayout:
                 
                 spacing: 10
@@ -165,7 +165,7 @@
                     id: tbr
                     on_state: root.send_tb()
                 ToggleButton:
-                    text: 'GEAR'
+                    text: 'Gear\nDOWN'
                     background_color: 0,1,0,1
                     id: gear
                     state: 'down'
