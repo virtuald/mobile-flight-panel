@@ -7,6 +7,10 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from FlightGear import FlightGear
+from kivy.uix.popup import Popup
+from kivy.uix.colorpicker import ColorPicker
+from kivy.config import Config
+
 
 import time
 import sys
@@ -14,7 +18,7 @@ import errno
 from socket import *
    
 #host = "192.168.30.1"
-host = "localhost"
+host = ""
 outputline = "foo"
 port = 9009
 in_port = 9010
@@ -28,10 +32,16 @@ max_view=10
 fg = False
 
 try:
+    host = Config.get('kivy', 'flightgear_ip')
+except:
+    print "no flightgear_ip entry in config.ini"
+    host= 'localhost'
+    
+
+try:
     fg = FlightGear(host, telnet_port)
 except:
     print "can't connet to telnet port ", telnet_port
-
 
 
 def read_telnet(path):
@@ -111,10 +121,21 @@ def read_udp(dt):
             panel.ids.gear.state = "normal"
         
         panel.views=input_value[12]  #views
-            
-
-
-
+        
+        
+class SettingsPopup(Popup):
+    def mydismiss(self,*args):
+        global host
+        global address
+        host = self.ids.ip.text
+        #print host, address
+        addr = (host,port)
+        print "new UDP out connection:", addr
+        Config.set('kivy', 'flightgear_ip', host)
+        Config.write()
+        self.dismiss()
+    
+        
 class MyPanelWidget(BoxLayout):
     sbs="0"    #speedbrake
     t1s="0"    #throttle
@@ -133,6 +154,17 @@ class MyPanelWidget(BoxLayout):
     view=0
     fov=[55,55,55,55,55,55,55,55,55,55,55]
     #fg = FlightGear(host, telnet_port)
+    
+    def show_popup(self,*args):
+        global host
+        p = SettingsPopup()
+        p.ids.ip.text = host
+        p.open()
+        print 'show_popup' , p.ids.ip.text
+        
+    def set_ip(self,*args):
+        print 'set_ip' , self.ids.ip.text
+        
 
     def read_telnet(self,path):
         if fg:
@@ -276,7 +308,11 @@ class MyPanelWidget(BoxLayout):
                   self.views+"\n"
                   
         print outputline
-        UDPSock.sendto(outputline,addr)
+        try:
+            UDPSock.sendto(outputline,addr)
+        except:
+            print "can't connet to udp out port ", addr
+
             
         
 
@@ -285,8 +321,10 @@ class Panel(App):
         global panel
         
         #crudeclock = IncrediblyCrudeClock()
-     
+        #popup = Popup(title='Test popup', content=Label(text='Hello world'),auto_dismiss=False)
+       
         panel = MyPanelWidget()
+        #popup.open()
         #insock.bind(('', in_port)) 
         #print "linstening on port ", in_port
         #read_udp()
