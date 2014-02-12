@@ -2,18 +2,20 @@
 
 
 <SettingsPopup>:
-    size_hint: .3, .3
+    size_hint: .3, .5
     title: 'Set the IP address of the \ncomputer running FlightGear'
     BoxLayout:
         orientation: 'vertical'
         TextInput
-            focus: True
+            #focus: True
             multiline:  False
             id: ip
         Button:
-            
             text: 'OK'
             on_press: root.mydismiss()
+        Label:
+            size_hint_y: 0.5
+            text: 'Panel version 2.2'
 
 <MyPanelWidget>:
     orientation: 'vertical'
@@ -31,7 +33,7 @@
         Label:
             text: ''
         Button:
-            size_hint_x: 0.03
+            size_hint_x: 0.04
             text: 'IP'
             on_press: root.show_popup()
             
@@ -149,7 +151,8 @@
                 spacing: 10
                 padding: 10
                 Button:
-                    text: 'f1'
+                    text: 'settings'
+                    on_press: root.show_popup()
                 Button:
                     text: 'f2'
                 Button:
@@ -163,9 +166,9 @@
                 padding: 10
                 orientation: 'horizontal'
                 ToggleButton:
-                    text: 'p'
+                    text: ''
                     #on_state: root.read_telnet('/sim/time/elapsed-sec')
-                    on_state: root.popup.open()
+                    
                 ToggleButton:
                     text: ''
                 ToggleButton:

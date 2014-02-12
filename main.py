@@ -8,16 +8,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from FlightGear import FlightGear
 from kivy.uix.popup import Popup
-from kivy.uix.colorpicker import ColorPicker
 from kivy.config import Config
-
 
 import time
 import sys
 import errno
 from socket import *
    
-#host = "192.168.30.1"
 host = ""
 outputline = "foo"
 port = 9009
@@ -38,21 +35,10 @@ except:
     host= 'localhost'
     
 
-try:
-    fg = FlightGear(host, telnet_port)
-except:
-    print "can't connet to telnet port ", telnet_port
-
-
-def read_telnet(path):
-    if (fg):
-        val = fg[path]
-        print "read_telnet", path, val
-        return val
-
-def write_telnet(path, value):
-    if (fg):
-        fg[path] = value
+#try:
+#    fg = FlightGear(host, telnet_port)
+#except:
+#    print "can't connet to telnet port ", telnet_port
 
 
 # disabled due to race conditions:
@@ -161,9 +147,6 @@ class MyPanelWidget(BoxLayout):
         p.ids.ip.text = host
         p.open()
         print 'show_popup' , p.ids.ip.text
-        
-    def set_ip(self,*args):
-        print 'set_ip' , self.ids.ip.text
         
 
     def read_telnet(self,path):
