@@ -15,7 +15,7 @@ import sys
 import errno
 from socket import *
    
-host = ""
+host = "192.168.30.1"
 outputline = "foo"
 port = 9009
 in_port = 9010
@@ -28,11 +28,11 @@ insock.setblocking(0)
 max_view=10      
 fg = False
 
-try:
-    host = Config.get('kivy', 'flightgear_ip')
-except:
-    print "no flightgear_ip entry in config.ini"
-    host= 'localhost'
+#try:
+#    host = Config.get('kivy', 'flightgear_ip')
+#except:
+#    print "no flightgear_ip entry in config.ini"
+#    host= 'localhost'
     
 
 #try:
