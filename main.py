@@ -1,320 +1,153 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2020 Dustin Spicuzza
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
+import os.path
+
 from kivy.app import App
 
-from kivy.uix.scatter import Scatter
-from kivy.uix.label import Label
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.textinput import TextInput
+from kivy.core.text import LabelBase
+from kivy.factory import Factory
+from kivy.resources import resource_add_path
+
 from kivy.uix.boxlayout import BoxLayout
-from kivy.clock import Clock
-from FlightGear import FlightGear
 from kivy.uix.popup import Popup
-from kivy.config import Config
+from kivy.uix.widget import Widget
 
-import time
-import sys
-import errno
-from socket import *
-   
-host = "192.168.30.1"
-outputline = "foo"
-port = 9009
-in_port = 9010
-telnet_port = 9000
-#buf = 1024
-addr = (host,port)
-UDPSock = socket(AF_INET,SOCK_DGRAM)
-insock =  socket(AF_INET,SOCK_DGRAM)
-insock.setblocking(0)
-max_view=10      
-fg = False
+import vjoy_client
 
-#try:
-#    host = Config.get('kivy', 'flightgear_ip')
-#except:
-#    print "no flightgear_ip entry in config.ini"
-#    host= 'localhost'
-    
-
-#try:
-#    fg = FlightGear(host, telnet_port)
-#except:
-#    print "can't connet to telnet port ", telnet_port
+PORT = 27257
+DEFAULT_HOST = "10.24.23.10"
 
 
-# disabled due to race conditions:
-def read_udp(dt):
-    #self.text = time.asctime()
-    input_value = []
-    data = False
-    try:
-        data, address = insock.recvfrom(4096)
-    except IOError as e:
-        if e.errno == errno.EWOULDBLOCK:
-            pass
-    
-    if (data):
-        print     "outputline:", outputline, len(outputline)
-        #stripped =  outputline.strip( '\n' );
-        #print     "  stripped:", stripped, len(stripped)
-        print "rec.   new:", data, len(data)
-        input_value = data.split(',')
-            
-        if (not(input_value[0] == panel.sbs)):
-            print "rec. speedbrakes"
-            panel.sbs=input_value[0]    #speedbrake
-            panel.ids.spdbrk.value = 2.0 - float(panel.sbs)*2
-            
-        panel.t1s=input_value[1]    #throttle
-        panel.ids.t1.value = float(panel.t1s) *100
-        panel.t2s=input_value[2]
-        panel.ids.t2.value = float(panel.t2s) *100
-        panel.etrims=input_value[3] #elev. trim
-        panel.ids.etrim.value = float(panel.etrims) *100
-        panel.fs=input_value[4]     #flaps
-        panel.ids.flaps.value = 4.0 - (float(panel.fs) * 4.0)
-        
-        panel.fovs=input_value[5]  #FOV zoom
-        print "fovs", panel.fovs
-        panel.ids.zoom.value = 102 - (float(panel.fovs))
-        #panel.pbs=input_value[6]    #parking brake
-        if (input_value[6] == '1'):
-            panel.ids.pb.state = "down"  
-        else:
-            panel.ids.pb.state = "normal"
-        
-        #panel.revs=input_value[7]   #reversers
-        if (input_value[7] == '1'):
-            panel.ids.rev.state = "down"  
-        else:
-            panel.ids.rev.state = "normal"
-        
-        #tbls=input_value[9]    #toe brakes 
-        if (input_value[9] == '1'):
-            panel.ids.tbl.state = "down"  
-        else:
-            panel.ids.tbl.state = "normal"
-        
-        #tbrs =input_value[10]
-        if (input_value[10] == '1'):
-            panel.ids.tbr.state = "down"  
-        else:
-            panel.ids.tbr.state = "normal"
-        
-        #panel.gs=input_value[11]     #gear
-        if (input_value[11] == '1'):
-            panel.ids.gear.state = "down"  
-        else:
-            panel.ids.gear.state = "normal"
-        
-        panel.views=input_value[12]  #views
-        
-        
 class SettingsPopup(Popup):
-    def mydismiss(self,*args):
-        global host
-        global address
-        host = self.ids.ip.text
-        #print host, address
-        addr = (host,port)
-        print "new UDP out connection:", addr
-        Config.set('kivy', 'flightgear_ip', host)
-        Config.write()
+    def __init__(self, vjoy):
+        super().__init__()
+        self.vjoy = vjoy
+
+    def on_ok(self):
+        self.vjoy.set_server(self.ids.ip.text, PORT)
         self.dismiss()
-    
-        
-class MyPanelWidget(BoxLayout):
-    sbs="0"    #speedbrake
-    t1s="0"    #throttle
-    t2s="0"
-    etrims="0" #elev. trim 
-    fs="0"     #flaps
-    fovs="55"  #FOV zoom
-    pbs="1"    #parking brake
-    revs="0"   #reverser  
-    tbls="0"    #toe brakes 
-    tbrs ="0"
-    gs="1"     #gear
-    views="0"  #views
-     
-    gear=True
-    view=0
-    fov=[55,55,55,55,55,55,55,55,55,55,55]
-    #fg = FlightGear(host, telnet_port)
-    
-    def show_popup(self,*args):
-        global host
-        p = SettingsPopup()
+
+
+class FlightPanel(BoxLayout):
+
+    axis_map = {
+        "t1": vjoy_client.VJoyClient.AXIS_X,
+        "t2": vjoy_client.VJoyClient.AXIS_Y,
+        "trim": vjoy_client.VJoyClient.AXIS_Z,
+    }
+
+    button_map = {
+        "spdbrk_ret": 1,
+        "spdbrk_half": 2,
+        "spdbrk_full": 3,
+        "flaps_ret": 4,
+        "flaps_1": 5,
+        "flaps_2": 6,
+        "flaps_3": 7,
+        "flaps_4": 8,
+        "gearup": 10,
+        "geardown": 11,
+        "misc1": 12,
+        "misc2": 13,
+        "misc3": 14,
+        "misc4": 15,
+        "alt+": 16,
+        "alt-": 17,
+        "heading+": 18,
+        "heading-": 19,
+    }
+
+    def __init__(self, server, port) -> None:
+        super().__init__()
+        self.vjoy = vjoy_client.VJoyClient(server, port)
+
+    def set_button(self, name):
+        self.vjoy.set_button(self.button_map[name], True)
+
+    def unset_button(self, name):
+        self.vjoy.set_button(self.button_map[name], False)
+
+    def show_popup(self):
+        p = SettingsPopup(self.vjoy)
+        host, _ = self.vjoy.get_server()
         p.ids.ip.text = host
         p.open()
-        print 'show_popup' , p.ids.ip.text
-        
 
-    def read_telnet(self,path):
-        if fg:
-            val = fg[path]
-            print "read_telnet", path, val
-            return val
-            
-    def write_telnet(self, path, val):
-        if fg:
-            fg[path] = value
-            print "write_telnet", path, val
+    def send_spdbrk(self):
+        spdbrk = self.ids.spdbrk.value
+        self.vjoy.set_buttons(
+            (self.button_map["spdbrk_ret"], spdbrk == 2),
+            (self.button_map["spdbrk_half"], spdbrk == 1),
+            (self.button_map["spdbrk_full"], spdbrk == 0),
+        )
 
+    def send_throttle(self):
+        t1 = self.ids.t1.value / 100.0
+        t2 = self.ids.t2.value / 100.0
 
-        
-    def send_spdbrk(self,*args):
-        #print self, type(self)
-        slider = self.ids.spdbrk
-        self.sbs = str((2 - slider.value)/2)
-        print 'spdbrk:', self.sbs
-        self.udp_tx()
-        
-    def send_throttle(self,*args):
-        t1 = self.ids.t1.value
-        t2 = self.ids.t2.value
-        self.t1s = str(t1/100)
-        self.t2s = str(t2/100)
-        print 'throttles:', self.t1s,self.t2s
-        self.udp_tx()
-      
-    def send_flaps(self,*args):
+        self.vjoy.set_axis(self.axis_map["t1"], t1)
+        self.vjoy.set_axis(self.axis_map["t2"], t2)
+
+    def send_flaps(self):
         flaps = self.ids.flaps.value
-        out_flaps = 0
-        if (flaps == 4):
-            out_flaps = 0
-        if (flaps == 3):
-            out_flaps = 0.25
-        if (flaps == 2):
-            out_flaps = 0.375
-        if (flaps == 1):
-            out_flaps = 0.5
-        if (flaps == 0):
-            out_flaps = 1.0
-        self.fs = str(out_flaps)
-        print 'flaps:', self.fs
-        self.udp_tx()
-        
-    def send_etrim(self,*args):
-        self.etrims = str((self.ids.etrim.value-50)/100)
-        print 'elev trim:', self.etrims
-        self.udp_tx()
-        
-        
-    def send_gear(self,*args):
-        self.gear = self.ids.gear.state
-        if (self.gear == "down"):
-            self.ids.gear.text = "Gear\nDOWN"
-            self.gs="1"
-        else:
-            self.ids.gear.text = "Gear\nUP"
-            self.gs="0"
-        print "gear", self.gear, self.gs
-        self.udp_tx()
-        
-    def send_pb(self,*args):
-        self.pb= self.ids.pb.state
-        if (self.pb == 'down'):
-            self.pbs = "1"
-        else:
-            #print self.pb
-            self.pbs = "0"
-        print "park brk", self.pb , self.pbs
-        self.udp_tx()
-        
-    def send_rev(self,*args):
-        self.rev= self.ids.rev.state
-        if (self.rev == 'down'):
-            self.revs = "1"
-        else:
-            self.revs = "0"
-        print "reverser", self.rev , self.revs
-        self.udp_tx()
 
-    def send_tb(self,*args):
-        self.tbl= self.ids.tbl.state
-        if (self.tbl == 'down'):
-            self.tbls = "1"
-        else:
-            self.tbls = "0"
-            
-        self.tbr= self.ids.tbr.state
-        if (self.tbr == 'down'):
-            self.tbrs = "1"
-        else:
-            self.tbrs = "0"
-                  
-            
-        print "Toe Brakes", self.tbls, self.tbrs
-        self.udp_tx()        
-        
+        self.vjoy.set_buttons(
+            (self.button_map["flaps_ret"], flaps == 4),
+            (self.button_map["flaps_1"], flaps == 3),
+            (self.button_map["flaps_2"], flaps == 2),
+            (self.button_map["flaps_3"], flaps == 1),
+            (self.button_map["flaps_4"], flaps == 0),
+        )
 
-    def send_zoom(self,*args):
-        #global fov
-        self.fov[self.view] = self.ids.zoom.value
-        self.fovs = str(int(102-(self.fov[self.view])))
-        print "view:" ,self.view, "fov:", self.fovs
-        self.udp_tx()
-        
-    def send_view(self,*args):
-        if(self.view < max_view):
-            self.view +=1
-            
-        else:
-            self.view=0
-        self.ids.zoom.value = self.fov[self.view]
-        self.views = str(self.view)
-        print "view:", self.views
-        self.udp_tx()
-        
-    def reset_view(self,*args):
-        self.view=0
-        self.views = str(self.view)
-        print "reset_view", self.views
-        self.udp_tx()
-        
-        
-    def udp_tx(self,*args):
-        global outputline
+    def send_etrim(self):
+        # min/max is 40%
+        value = (self.ids.etrim.value - 50) / -125.0
+        self.vjoy.set_axis(self.axis_map["trim"], value)
 
-        outputline = self.sbs +","+\
-                  self.t1s +","+\
-                  self.t2s +","+\
-                  self.etrims +","+\
-                  self.fs   +","+\
-                  self.fovs +","+\
-                  self.pbs  +","+\
-                  self.revs +","+\
-                  self.revs +","+\
-                  self.tbls  +","+\
-                  self.tbrs  +","+\
-                  self.gs   +","+\
-                  self.views+"\n"
-                  
-        print outputline
-        try:
-            UDPSock.sendto(outputline,addr)
-        except:
-            print "can't connet to udp out port ", addr
 
-            
-        
+class LastWidget(Widget):
+    pass
+
+
+class BoxLastLayout(BoxLayout):
+    def do_layout(self, *args):
+        children = self.children
+        hints = sum(c.size_hint_x for c in children[1:])
+        children[0].size_hint_x = 1.0 - hints
+        super().do_layout(*args)
+
 
 class Panel(App):
     def build(self):
-        global panel
-        
-        #crudeclock = IncrediblyCrudeClock()
-        #popup = Popup(title='Test popup', content=Label(text='Hello world'),auto_dismiss=False)
-       
-        panel = MyPanelWidget()
-        #popup.open()
-        #insock.bind(('', in_port)) 
-        #print "linstening on port ", in_port
-        #read_udp()
-        #Clock.schedule_interval(read_udp, 1)
-           
-        return panel
+        root = os.path.join(os.path.dirname(__file__))
+
+        # Register shiny font
+        font_path = os.path.join(root, 'assets', 'FuturaRenner-Regular.ttf')
+        LabelBase.register("Futura", font_path)
+
+        # Set images directory
+        resource_add_path(os.path.join(root, "images"))
+
+        Factory.register(cls=BoxLastLayout, classname="BoxLastLayout")
+        return FlightPanel(DEFAULT_HOST, 27257)
+
 
 if __name__ == "__main__":
     Panel().run()
-

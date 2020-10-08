@@ -1,49 +1,60 @@
 
-
-
 <SettingsPopup>:
-    size_hint: .3, .5
-    title: 'Set the IP address of the \ncomputer running FlightGear'
+    size_hint: .3, .4
+    pos_hint: {'y': .4}
+    title: 'vJoy feeder IP address'
     BoxLayout:
         orientation: 'vertical'
-        TextInput
-            #focus: True
+        TextInput:
             multiline:  False
             id: ip
         Button:
             text: 'OK'
-            on_press: root.mydismiss()
-        Label:
-            size_hint_y: 0.5
-            text: 'Panel version 2.2'
+            on_press: root.on_ok()
 
-<MyPanelWidget>:
+<FlightPanel>:
     orientation: 'vertical'
-    padding: 20
-    spacing: 30
     canvas:
         Rectangle:
-            source: 'background2.png'
+            source: 'bg-xhdpi.png'
             pos: self.pos
             size: self.size
     
-    BoxLayout:
-        size_hint_y: 0.02
-        orientation: 'horizontal'
-        Label:
-            text: ''
+    #
+    # first row
+    #
+
+    AnchorLayout:
+        anchor_x: "right"
+        anchor_y: "top"
+        size_hint_y: .14
+        padding: dp(5)
+
         Button:
-            size_hint_x: 0.04
-            text: 'IP'
-            on_press: root.show_popup()
+            size_hint_x: None
+            size_hint_y: .5
             
-    BoxLayout:
+            width: dp(30)
+            text: '...'
+            font: 'Futura'
+            bold: True
+            on_press: root.show_popup()
+
+    #
+    # second row
+    #
+
+    BoxLastLayout:
         orientation: 'horizontal'
-    #padding: 20
-    #spacing: 20
+        size_hint_y: .7
+
+        Widget:
+            size_hint_x: .083
+
+
         Slider:
-            padding: 40
             id: spdbrk
+            size_hint_x: .07
             orientation: 'vertical'
             min: 0.0
             max: 2.0
@@ -52,12 +63,16 @@
             on_value: root.send_spdbrk()
             canvas:
                 Rectangle:
-                    pos: (self.center_x - 64, self.value_pos[1] - 16)
+                    pos: (self.center_x - 64, self.value_pos[1] - 20)
                     size: (128, 64)
                     source: 'slider_spdbrk2.png'
-       
+        
+        Widget:
+            size_hint_x: .07
+        
         Slider:
             id: t1
+            size_hint_x: .07
             orientation: 'vertical'
             on_value: root.send_throttle()
             canvas:
@@ -66,10 +81,12 @@
                     size: (100,70)
                     source: 'throttle_l.png'  
         
-
+        Widget:
+            size_hint_x: .075
        
         Slider:
             id: t2
+            size_hint_x: .07
             orientation: 'vertical'
             #value: t1.value
             on_value: root.send_throttle()
@@ -79,25 +96,27 @@
                     size: (100,70)
                     source: 'throttle_r.png'
         
-            
+        Widget:
+            size_hint_x: .06
+
         Slider:
             id: etrim
+            size_hint_x: .07
             orientation: 'vertical'
             value: 50
             on_value: root.send_etrim()
             canvas:
-                #Rectangle:
-                    #pos: self.pos + self.width/2
-                    #size: (20,self.height)
                 Rectangle:
                     pos: (self.center_x - 15, self.value_pos[1] - 15)
                     size: (60, 30)
-                    #size: self.size
                     source: 'slider_trim.png'
-            
+        
+        Widget:
+            size_hint_x: .07
+
         Slider:
-            padding: 40
             id: flaps
+            size_hint_x: .07
             orientation: 'vertical'
             min: 0
             max: 4
@@ -109,100 +128,147 @@
                     pos:  (self.center_x - 30, self.value_pos[1] - 15)
                     size: (60, 30)
                     source: 'slider_flaps2.png'
-                
-        Slider:
-            id: zoom
-            value: 55
-            orientation: 'vertical'
-            on_value: root.send_zoom()
-        #Scatter:
-            #do_rotation: False 
-            #do_scale: False
-            #do_translation_x: False
-            #Image:
-                #source: 'trimwheel.jpg'
-                #size_y: self.size_y
         
-                
-    BoxLayout:
-        size_hint_y: 0.4
-        orientation: 'horizontal'
-        ToggleButton:
-            size_hint_x: 0.7
-            size_hint_x: 0.7
-            background_down: 'pb_on2.png'
-            background_normal: 'pb_off2.png'
-            id: pb
-            on_state: root.send_pb()
-        
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_x: 1.2
-            ToggleButton:
-                background_down: 'rev_active.png'
-                background_normal: 'rev_off.png'
-                #size_hint_x: 2.0
-                #background_color: 1,0,0,1
-                #text: 'REVERSER'
-                id: rev
-                on_state: root.send_rev()
-            BoxLayout:
-                orientation: 'horizontal'
-                spacing: 10
-                padding: 10
-                Button:
-                    text: 'settings'
-                    on_press: root.show_popup()
-                Button:
-                    text: 'f2'
-                Button:
-                    text: 'f3'
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_x: 2.0
-            BoxLayout:
-                
-                spacing: 10
-                padding: 10
-                orientation: 'horizontal'
-                ToggleButton:
-                    text: ''
-                    #on_state: root.read_telnet('/sim/time/elapsed-sec')
-                    
-                ToggleButton:
-                    text: ''
-                ToggleButton:
-                    text: ''    
-                ToggleButton:
-                    text: '' 
-                ToggleButton:
-                    text: ''
-            BoxLayout:
-                
-                spacing: 10
-                padding: 10
-                orientation: 'horizontal'
-                Button:
-                    text: 'toe brk\nL'
-                    id: tbl
-                    on_state: root.send_tb()
-                Button:
-                    text: 'toe brk\nR'
-                    id: tbr
-                    on_state: root.send_tb()
-                ToggleButton:
-                    text: 'Gear\nDOWN'
-                    background_color: 0,1,0,1
-                    id: gear
-                    state: 'down'
-                    on_state: root.send_gear()
-                 
-                Button:
-                    text: 'view' 
-                    on_press: root.send_view()
-                Button:
-                    text: 'reset\nview' 
-                    on_press: root.reset_view()
+        Widget:
+            size_hint_x: .08
 
- 
-        
+        AnchorLayout:
+            anchor_x: "center"
+            anchor_y: "top"
+            size_hint_x: .2
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: dp(185)
+                
+                spacing: dp(5)
+
+                Label:
+                    size_hint_y: None
+                    height: dp(30)
+                    text: 'ALTITUDE'
+                    font: 'Futura'
+                    bold: True
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(50)
+                    orientation: "horizontal"
+                    spacing: dp(10)
+
+                    Button:
+                        text: '-'
+                        font: 'Futura'
+                        bold: True
+                        on_press: root.set_button('alt-')
+                        on_release: root.unset_button('alt-')
+                    Button:
+                        text: '+'
+                        font: 'Futura'
+                        bold: True
+                        on_press: root.set_button('alt+')
+                        on_release: root.unset_button('alt+')
+            
+                Widget:
+                    size_hint_y: None
+                    height: dp(10)
+
+                Label:
+                    size_hint_y: None
+                    height: dp(30)
+                    text: 'HEADING'
+                    font: 'Futura'
+                    bold: True
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(50)
+                    orientation: "horizontal"
+                    spacing: dp(10)
+
+                    Button:
+                        text: '-'
+                        font: 'Futura'
+                        bold: True
+                        on_press: root.set_button('heading-')
+                        on_release: root.unset_button('heading-')
+                    Button:
+                        text: '+'
+                        font: 'Futura'
+                        bold: True
+                        on_press: root.set_button('heading+')
+                        on_release: root.unset_button('heading+')
+
+        Widget:
+
+    Widget:
+        size_hint_y: .05
+
+    #
+    # final row
+    #
+
+    AnchorLayout:
+        anchor_x: "left"
+        anchor_y: "center"
+        size_hint_y: .15
+
+        BoxLayout:
+            orientation: 'horizontal'    
+            padding: dp(5)
+            spacing: dp(10)
+            Button:
+                size_hint_x: None
+                width: dp(80)
+                text: 'GEAR UP'
+                font: 'Futura'
+                bold: True
+                on_press: root.set_button('gearup')
+                on_release: root.unset_button('gearup')
+
+            Button:
+                size_hint_x: None
+                width: dp(80)
+                text: 'GEAR DN'
+                font: 'Futura'
+                bold: True
+                on_press: root.set_button('geardown')
+                on_release: root.unset_button('geardown')
+            
+            Widget:
+                size_hint_x: None
+                width: dp(50)
+            
+            Button:
+                size_hint_x: None
+                width: dp(80)
+                text: 'MISC 1'
+                font: 'Futura'
+                bold: True
+                on_press: root.set_button('misc1')
+                on_release: root.unset_button('misc1')
+            Button:
+                size_hint_x: None
+                width: dp(80)
+                text: 'MISC 2'
+                font: 'Futura'
+                bold: True
+                on_press: root.set_button('misc2')
+                on_release: root.unset_button('misc2')
+            Button:
+                size_hint_x: None
+                width: dp(80)
+                text: 'MISC 3'
+                font: 'Futura'
+                bold: True
+                on_press: root.set_button('misc3')
+                on_release: root.unset_button('misc3')
+            Button:
+                size_hint_x: None
+                width: dp(80)
+                text: 'MISC 4'
+                font: 'Futura'
+                bold: True
+                on_press: root.set_button('misc4')
+                on_release: root.unset_button('misc4')

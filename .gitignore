@@ -1,0 +1,4 @@
+.buildozer
+.vscode
+bin
+__pycache__
